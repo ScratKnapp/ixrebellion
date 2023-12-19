@@ -1,0 +1,8 @@
+"ixrebellion"
+{
+	"base"		"helix"
+	"title"		"swrp"
+	"author"	"nitsel"
+	"category"	"rp"
+	"menusystem" "1"
+}
