@@ -36,9 +36,9 @@ function PANEL:Init()
 	attributesPanel:SetPos(10, attributesLabel:GetTall() + attributesLabel:GetY() + 5)
 	attributesPanel:SetSize(200, 400)
 	local yOffset = 10
-	for _, attribute in pairs(ix.attributes.list) do
+	for uniqueID, attribute in pairs(ix.attributes.list) do
 		local label = vgui.Create("DLabel", attributesPanel)
-		label:SetText(attribute.name .. ": " .. character:GetAttribute(attribute.uniqueID, 0))
+		label:SetText(attribute.name .. ": " .. character:GetAttribute(uniqueID, 0))
 		label:SetFont("CustomFontDefault")
 		label:SizeToContents()
 		label:SetPos(5, yOffset)
