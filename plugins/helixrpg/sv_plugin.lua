@@ -2,8 +2,9 @@ function PLUGIN:PlayerSpawn(client)
     local character = client:GetCharacter()
     if not character then return end
     local backgroundTable = character:GetLineage()
-    client:SetShieldPoints(0, false, false)
-    client:SetWoundSlots(self.DefaultWounds + character:GetAttribute("con", 0))
+    client:SetShieldPoints(0, false)
+    client:SetWoundSlots(self.DefaultWounds + character:GetAttribute("con", 0), false)
+    client:SetMaxWounds(self.DefaultWounds + character:GetAttribute("con", 0), false)
     if not character:GetData("CharacterCreationSet", false) then
         character:SetData("Lineage", backgroundTable)
         local feats = {}
