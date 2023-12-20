@@ -94,12 +94,12 @@ function PANEL:Init()
 	local woundsPanel = vgui.Create("DPanel", self)
 	woundsPanel:SetPos(400, 50)
 	woundsPanel:SetSize(140, 20)
-	local boxWidth = 12
+	local boxWidth = 5
 	local boxSpacing = 2
 	local totalBoxWidth = boxWidth + boxSpacing
 	local numWounds = client:GetWoundSlots()
 	-- Create wound boxes
-	for i = 1, PLUGIN.MaxWounds do
+	for i = 1, client:GetMaxWounds() do
 		local box = vgui.Create("DPanel", woundsPanel)
 		box:SetPos((i - 1) * totalBoxWidth, 2)
 		box:SetSize(boxWidth, 16)
@@ -117,6 +117,9 @@ function PANEL:Init()
 	local shieldPanel = vgui.Create("DPanel", self)
 	shieldPanel:SetPos(600, 50)
 	shieldPanel:SetSize(140, 20)
+	local boxWidth = 12
+	local boxSpacing = 2
+	local totalBoxWidth = boxWidth + boxSpacing
 	local numShieldPoints = client:GetShieldPoints()
 	for i = 1, PLUGIN.MaxShields do
 		local box = vgui.Create("DPanel", shieldPanel)
