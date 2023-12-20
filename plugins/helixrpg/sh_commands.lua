@@ -272,6 +272,9 @@ ix.command.Add(
 		arguments = {ix.type.player, ix.type.number},
 		OnRun = function(self, client, target, points)
 			target:SetWoundSlots(points, false)
+			local newpoints = target:GetWoundSlots()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has given " .. target:GetName() .. " " .. points.. " Wound Points. They now have " .. newpoints)
+			ix.log.Add(client, "givehealth", target, points)
 		end
 	}
 )
@@ -282,6 +285,9 @@ ix.command.Add(
 		arguments = {ix.type.player, ix.type.number},
 		OnRun = function(self, client, target, points)
 			target:SetShieldPoints(points, false)
+			local newpoints = target:GetShieldPoints()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has given " .. target:GetName() .. " " .. points.. " Shield Points. They now have " .. newpoints)
+			ix.log.Add(client, "giveshields", target, points)
 		end
 	}
 )
@@ -292,6 +298,9 @@ ix.command.Add(
 		arguments = {ix.type.number},
 		OnRun = function(self, client, points)
 			client:SetWoundSlots(points, false)
+			local newpoints = client:GetWoundSlots()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has given themselves " .. points.. " Wound Points and now has " .. newpoints)
+			ix.log.Add(client, "giveselfhealth", points)
 		end
 	}
 )
@@ -302,6 +311,9 @@ ix.command.Add(
 		arguments = {ix.type.number},
 		OnRun = function(self, client, points)
 			client:SetShieldPoints(points, false)
+			local newpoints = client:GetShieldPoints()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has given themselves " .. points.. " Shield Points and now has " .. newpoints)
+			ix.log.Add(client, "giveselfshields", points)
 		end
 	}
 )
@@ -312,6 +324,9 @@ ix.command.Add(
 		arguments = {ix.type.player, ix.type.number},
 		OnRun = function(self, client, target, points)
 			target:SetWoundSlots(points, true)
+			local newpoints = target:GetWoundSlots()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has has taken " .. points .. " Health Points from " .. target:GetName() .. ". They now have " .. newpoints)
+			ix.log.Add(client, "takehealth", target, points)
 		end
 	}
 )
@@ -322,6 +337,9 @@ ix.command.Add(
 		arguments = {ix.type.number},
 		OnRun = function(self, client, points)
 			client:SetWoundSlots(points, true)
+			local newpoints = client:GetWoundSlots()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has removed " .. points.. " of their Wound Points and now has " .. newpoints)
+			ix.log.Add(client, "takeselfhealth", points)
 		end
 	}
 )
@@ -332,6 +350,9 @@ ix.command.Add(
 		arguments = {ix.type.player, ix.type.number},
 		OnRun = function(self, client, target, points)
 			target:SetShieldPoints(points, true)
+			local newpoints = target:GetShieldPoints()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has has taken " .. points .. " Shield Points from " .. target:GetName() .. ". They now have " .. newpoints)
+			ix.log.Add(client, "takeshields", target, points)
 		end
 	}
 )
@@ -342,6 +363,9 @@ ix.command.Add(
 		arguments = {ix.type.number},
 		OnRun = function(self, client, points)
 			client:SetShieldPoints(points, true)
+			local newpoints = client:GetShieldPoints()
+			ix.chat.Send(client, "effectannounce", client:GetCharacter():GetName() .. " has removed " .. points.. " of their Shield Points and now has " .. newpoints)
+			ix.log.Add(client, "takeselfshields", points)
 		end
 	}
 )

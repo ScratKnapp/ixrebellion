@@ -8,6 +8,6 @@ ix.util.Include("sh_config.lua")
 ix.util.Include("sh_commands.lua")
 ix.util.Include("sh_chat.lua")
 ix.util.Include("sv_plugin.lua")
-PLUGIN.MaxWounds = 10
+PLUGIN.MaxWounds = 20
 PLUGIN.DefaultWounds = 10
 PLUGIN.MaxShields = 10

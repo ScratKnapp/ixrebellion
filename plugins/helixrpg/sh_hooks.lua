@@ -44,44 +44,48 @@ function PLUGIN:PlayerDeath(victim, inflictor, attacker)
 end
 
 local playerMeta = FindMetaTable("Player")
-function playerMeta:SetShieldPoints(points, take, noWarn)
-	noWarn = noWarn or true
+function playerMeta:SetShieldPoints(points, take)
 	local currentPoints = self:GetShieldPoints()
 	if take then
-		currentPoints = math.max(0, currentPoints - points)
+		newpoints = math.max(0, currentPoints - points)
 	else
-		currentPoints = math.min(PLUGIN.MaxShields, currentPoints + points)
+		newpoints = math.min(PLUGIN.MaxShields, currentPoints + points)
 	end
-
-	if not noWarn then
-		ix.chat.Send(self, "effectannounce", take and "Took " or "Added " .. points .. " to Shield")
-	end
-
-	self:SetNWInt("ShieldPoints", currentPoints)
+	self:SetNWInt("ShieldPoints", newpoints)
 end
 
 function playerMeta:GetShieldPoints()
 	return self:GetNWInt("ShieldPoints", 0)
 end
 
-function playerMeta:SetWoundSlots(points, take, noWarn)
+function playerMeta:SetWoundSlots(points, take)
 	local currentSlots = self:GetWoundSlots()
 	if take then
-		currentSlots = math.max(0, currentSlots - points)
+		newSlots = math.max(0, currentSlots - points)
 	else
-		currentSlots = math.min(PLUGIN.MaxWounds, currentSlots + points)
+		newSlots = math.min(self:GetMaxWounds(), currentSlots + points)
 	end
 
-	if not noWarn then
-		ix.chat.Send(self, "effectannounce", take and "Took " or "Added " .. points .. " to Wound")
-	end
-
-	self:SetNWInt("WoundSlots", currentSlots)
+	
+	self:SetNWInt("WoundSlots", newSlots)
 end
 
 function playerMeta:GetWoundSlots()
 	return self:GetNWInt("WoundSlots", PLUGIN.DefaultWounds)
 end
+
+function playerMeta:SetMaxWounds(points)
+
+	if points > PLUGIN.MaxWounds then points = PLUGIN.MaxWounds end
+	if points < 0 then points = PLUGIN.DefaultWounds end 
+
+	self:SetNWInt("MaxWounds", points)
+end
+
+function playerMeta:GetMaxWounds()
+	return self:GetNWInt("MaxWounds", PLUGIN.MaxWounds)
+end
+
 
 ix.chat.Register(
 	"effectannounce",
@@ -93,3 +97,50 @@ ix.chat.Register(
 		indicator = "chatPerforming"
 	}
 )
+
+if (SERVER) then
+    ix.log.AddType("giveselfshields", function(client, points)
+		newpoints = client:GetShieldPoints()
+        return string.format("%s has given themselves %s Shield points, and now has %s. ", client:Name(), points, newpoints)
+    end)
+
+	ix.log.AddType("takeselfshields", function(client, points)
+		newpoints = client:GetShieldPoints()
+        return string.format("%s has taken away %s of their Shield points, and now has %s. ", client:Name(), points, newpoints)
+    end)
+
+	ix.log.AddType("giveselfhealth", function(client, points)
+		newpoints = client:GetWoundSlots()
+		return string.format("%s has given themselves %s Wound points, and now has %s. ", client:Name(), points, newpoints)
+    end)
+
+	ix.log.AddType("takeselfhealth", function(client, points)
+		newpoints = client:GetWoundSlots()
+        return string.format("%s has taken away %s of their Health points, and now has %s. ", client:Name(), points, newpoints)
+    end)
+
+	ix.log.AddType("giveshields", function(client, target, points)
+		newpoints = target:GetShieldPoints()
+		return string.format("%s has given %s %s Shield points. They now have %s. ", client:GetCharacter():GetName(), target:Name(), points, newpoints)
+    end)
+
+	ix.log.AddType("takeshields", function(client, target, points)
+		newpoints = target:GetShieldPoints()
+        return string.format("%s has taken  %s Shield points from %s. They now have %s ", client:GetCharacter():GetName(), points, target:GetName(), newpoints)
+    end)
+
+	ix.log.AddType("givehealth", function(client, target, points)
+		newpoints = target:GetWoundSlots()
+		return string.format("%s has given %s %s Health points. They now have %s. ", client:GetCharacter():GetName(), target:Name(), points, newpoints)
+    end)
+
+	ix.log.AddType("takehealth", function(client, target, points)
+		newpoints = target:GetWoundSlots()
+        return string.format("%s has taken  %s Health points from %s. They now have %s ", client:GetCharacter():GetName(), points, target:GetName(), newpoints)
+    end)
+
+
+
+
+
+end
