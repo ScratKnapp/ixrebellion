@@ -19,7 +19,6 @@ function ix.feats.LoadFromDir(directory)
 		FEAT.name = FEAT.name or "Unknown"
 		FEAT.description = FEAT.description or "No description available."
 		FEAT.icon = FEAT.icon or "icon16/bomb.png"
-		FEAT.display = FEAT.display or true 
 
 		for k, v in pairs(FEAT) do
 			if isfunction(v) then
