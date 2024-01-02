@@ -7,24 +7,30 @@ ix.chat.Register("rollstat", {
     CanHear = ix.config.Get("chatRange", 280),
     deadCanChat = true,
     OnChatAdd = function(self, speaker, text, bAnonymous, data)
-        local format = "** %s has rolled %d out of %d on %s"
-        local formatWithBoost = "** %s has rolled %d (%d + %d) out of %d on %s"
-        local formatWithDice = "** %s has rolled %d out of %d (%dd%d) on %s"
-        local formatWithBoostAndDice = "** %s has rolled %d (%d + %d) out of %d (%dd%d) on %s"
+        local formatAttribute = "** %s has rolled %d (%d + %d) out of %d on their %s roll"
+        local formatAttributeBoost = "** %s has rolled %d (%d + %d + %d☆) out of %d on their %s roll"
+		local formatAttributeSkill = "** %s has rolled %d (%d + %d + %d) out of %d on their %s and %s roll"
+		local formatAttributeSkillBoost = "** %s has rolled %d (%d + %d + %d + %d☆) out of %d on their %s and %s roll"
         local critSuccess = "a critical success."
         local critFailure = "a critical failure."
+
+		
     
         local message
-        if data.attrVal > 0 and data.numDice > 1 then
-            message = string.format(formatWithBoostAndDice, speaker:Name(), tonumber(text) + data.attrVal, tonumber(text), data.attrVal, data.numDice * data.numSides, data.numDice, data.numSides, data.attrName)
-        elseif data.attrVal > 0 then
-            message = string.format(formatWithBoost, speaker:Name(), tonumber(text) + data.attrVal, tonumber(text), data.attrVal, data.numDice * data.numSides, data.attrName)
-        elseif data.numDice > 1 then
-            message = string.format(formatWithDice, speaker:Name(), tonumber(text), data.numDice * data.numSides, data.numDice, data.numSides, data.attrName)
-        else
-            message = string.format(format, speaker:Name(), tonumber(text), data.numDice * data.numSides, data.attrName)
-        end
-    
+        if data.hasAttr and not data.hasSkill and data.bonus == 0 then
+            message = string.format(formatAttribute, speaker:Name(), tonumber(text) + data.attrVal, tonumber(text), data.attrVal, data.numSides, data.attrName)
+		elseif data.hasAttr and not data.hasSkill and data.bonus > 0 then
+            message = string.format(formatAttributeBoost, speaker:Name(), tonumber(text) + data.attrVal + data.bonus, tonumber(text), data.attrVal, data.bonus, data.numSides, data.attrName)
+		elseif not data.hasAttr and data.hasSkill and data.bonus == 0 then
+            message = string.format(formatAttribute, speaker:Name(), tonumber(text) + data.skillVal, tonumber(text), data.skillVal, data.numSides, data.skillName)
+		elseif not data.hasAttr and data.hasSkill and data.bonus > 0 then
+			message = string.format(formatAttributeBoost, speaker:Name(), tonumber(text) + data.skillVal + data.bonus, tonumber(text), data.skillVal, data.bonus, data.numSides, data.skillName)
+		elseif data.hasAttr and data.hasSkill and data.bonus == 0 then
+			message = string.format(formatAttributeSkill, speaker:Name(), tonumber(text) + data.attrVal + data.skillVal, tonumber(text), data.attrVal, data.skillVal, data.numSides, data.attrName, data.skillName)
+		elseif data.hasAttr and data.hasSkill and data.bonus > 0 then
+			message = string.format(formatAttributeSkillBoost, speaker:Name(), tonumber(text) + data.attrVal + data.skillVal + data.bonus, tonumber(text), data.attrVal, data.skillVal, data.bonus, data.numSides, data.attrName, data.skillName)
+		end 
+
         if data.critVal == 1 then
             chat.AddText(self.color, message .. ", ", Color(0, 255, 0), critSuccess)
         elseif data.critVal == -1 then
@@ -32,6 +38,8 @@ ix.chat.Register("rollstat", {
         else
             chat.AddText(self.color, message .. ".")
         end
+
+
     end
 })
 

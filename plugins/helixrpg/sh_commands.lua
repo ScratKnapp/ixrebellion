@@ -28,21 +28,25 @@ ix.command.Add(
 
 ix.command.Add("RollStat", {
     description = "Leave fate to chance by rolling a random number with an attribute to boost your odds.",
-    arguments = {ix.type.string, bit.bor(ix.type.number, ix.type.optional), bit.bor(ix.type.number, ix.type.optional)},
-    OnRun = function(self, client, attribute, numDice, numSides)
-        numDice = numDice or 1
-        numSides = numSides or 20
+    arguments = {ix.type.string,bit.bor (ix.type.string, ix.type.optional),bit.bor(ix.type.number, ix.type.optional)},
+    OnRun = function(self, client, attribute, skill, bonus)
+        local numDice = 1
+        local numSides = 20
 
         local totalValue = 0
         for i = 1, numDice do
             totalValue = totalValue + math.random(1, numSides)
         end
 
+		local hasAttr
+		local hasSkill
+		local bonus = bonus or 0
+
         local attributeTable
         local attributeIndex
         local attrVal = 0
 
-        if attribute then
+        if attribute and string.lower(attribute) ~= "none"  then
             for k, v in pairs(ix.attributes.list) do
                 if string.lower(v.name) == string.lower(attribute) then
                     attributeTable = v
@@ -60,8 +64,38 @@ ix.command.Add("RollStat", {
                 return "That is not a valid attribute!"
             end
 
+
+			hasAttr = true 
             attrVal = client:GetCharacter():GetAttribute(attributeIndex, 0)
         end
+
+		local skillTable
+        local skillIndex
+        local skillVal = 0
+
+        if skill and string.lower(skill) ~= "none"  then
+            for k, v in pairs(ix.skills.list) do
+                if string.lower(v.name) == string.lower(skill) then
+                    skillTable = v
+                    skillIndex = k
+                elseif k == string.lower(skill) then
+                    attributeTable = v
+                    attributeIndex = k
+                elseif v.alias and table.HasValue(v.alias, string.lower(skill)) then
+                    skill = v
+                    skill = k
+                end
+            end
+
+            if skillTable == nil then
+                return "That is not a valid skill!"
+            end
+
+			hasSkill = true
+            skillVal = client:GetCharacter():GetSkill(skillIndex, 0)
+        end
+
+		
 
         local critVal = 0 // -1 = crit fail, 0 = normal, 1 = crit success
         if totalValue == numDice * numSides then
@@ -73,17 +107,28 @@ ix.command.Add("RollStat", {
         ix.chat.Send(client, "rollstat", tostring(totalValue), nil, nil, {
             attrName = attributeTable and attributeTable.name or "",
             attrVal = attrVal,
+			skillName = skillTable and skillTable.name or "",
+			skillVal = skillVal,
+			bonus = bonus,
             critVal = critVal,
             numDice = numDice,
-            numSides = numSides
+            numSides = numSides,
+			hasAttr = hasAttr,
+			hasSkill = hasSkill
+
         })
 
         ix.log.Add(client, "rollstat", totalValue, attributeTable and attributeTable.name or "", attrVal, critVal, {
-            attrName = attributeTable and attributeTable.name or "",
+			attrName = attributeTable and attributeTable.name or "",
             attrVal = attrVal,
+			skillName = skillTable and skillTable.name or "",
+			skillVal = skillVal,
+			bonus = bonus,
             critVal = critVal,
             numDice = numDice,
-            numSides = numSides
+            numSides = numSides,
+			hasAttr = hasAttr,
+			hasSkill = hasSkill
         })
     end
 })
@@ -498,23 +543,28 @@ end
 
 if (SERVER) then
 ix.log.AddType("rollstat", function(client, value, attr, attrVal, critVal, data)
-    local format = "%s rolled %d out of %d on %s"
-    local formatWithBoost = "%s rolled %d (%d + %d) out of %d on %s"
-    local formatWithDice = "%s rolled %d out of %d (%d + %d) on %s"
-    local formatWithBoostAndDice = "%s rolled %d (%d + %d) out of %d (%dd%d) on %s"
-    local critSuccess = ", a critical success."
-    local critFailure = ", a critical failure."
+	local formatAttribute = "** %s has rolled %d (%d + %d) out of %d on their %s roll"
+	local formatAttributeBoost = "** %s has rolled %d (%d + %d + %d) out of %d on their %s roll"
+	local formatAttributeSkill = "** %s has rolled %d (%d + %d + %d) out of %d on their %s and %s roll"
+	local formatAttributeSkillBoost = "** %s has rolled %d (%d + %d + %d + %d) out of %d on their %s and %s roll"
+	local critSuccess = "a critical success."
+	local critFailure = "a critical failure."
+
 
     local message
-    if attrVal > 0 and data.numDice > 1 then
-        message = string.format(formatWithBoostAndDice, client:Name(), tonumber(value) + tonumber(attrVal), tonumber(value), attrVal, data.numDice * data.numSides, data.numDice, data.numSides, attr)
-    elseif attrVal > 0 then
-        message = string.format(formatWithBoost, client:Name(), tonumber(value) + tonumber(attrVal), tonumber(value), attrVal, data.numDice * data.numSides, attr)
-    elseif data.numDice > 1 then
-        message = string.format(formatWithDice, client:Name(), tonumber(value), data.numDice * data.numSides, data.numDice, data.numSides, attr)
-    else
-        message = string.format(format, client:Name(), tonumber(value), data.numDice * data.numSides, attr)
-    end
+	if data.hasAttr and not data.hasSkill and data.bonus == 0 then
+		message = string.format(formatAttribute, client:Name(), value + data.attrVal, value, data.attrVal, data.numSides, data.attrName)
+	elseif data.hasAttr and not data.hasSkill and data.bonus > 0 then
+		message = string.format(formatAttributeBoost, client:Name(), value + data.attrVal + data.bonus, value, data.attrVal, data.bonus, data.numSides, data.attrName)
+	elseif not data.hasAttr and data.hasSkill and data.bonus == 0 then
+		message = string.format(formatAttribute, client:Name(), value + data.skillVal, value, data.skillVal, data.numSides, data.skillName)
+	elseif not data.hasAttr and data.hasSkill and data.bonus > 0 then
+		message = string.format(formatAttributeBoost, client:Name(), value + data.skillVal + data.bonus, value, data.skillVal, data.bonus, data.numSides, data.skillName)
+	elseif data.hasAttr and data.hasSkill and data.bonus == 0 then
+		message = string.format(formatAttributeSkill, client:Name(), value + data.attrVal + data.skillVal, value, data.attrVal, data.skillVal, data.numSides, data.attrName, data.skillName)
+	elseif data.hasAttr and data.hasSkill and data.bonus > 0 then
+		message = string.format(formatAttributeSkillBoost, client:Name(), value + data.attrVal + data.skillVal + data.bonus, value, data.attrVal, data.skillVal, data.bonus, data.numSides, data.attrName, data.skillName)
+	end 
 
     if critVal == 1 then
         return message .. critSuccess
@@ -523,6 +573,7 @@ ix.log.AddType("rollstat", function(client, value, attr, attrVal, critVal, data)
     else
         return message .. "."
     end
+
 end)
 
 ix.log.AddType("roll", function(client, value, data)
