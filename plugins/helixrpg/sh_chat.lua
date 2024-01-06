@@ -19,15 +19,15 @@ ix.chat.Register("rollstat", {
         local message
         if data.hasAttr and not data.hasSkill and data.bonus == 0 then
             message = string.format(formatAttribute, speaker:Name(), tonumber(text) + data.attrVal, tonumber(text), data.attrVal, data.numSides, data.attrName)
-		elseif data.hasAttr and not data.hasSkill and data.bonus > 0 then
+		elseif data.hasAttr and not data.hasSkill and data.bonus ~= 0 then
             message = string.format(formatAttributeBoost, speaker:Name(), tonumber(text) + data.attrVal + data.bonus, tonumber(text), data.attrVal, data.bonus, data.numSides, data.attrName)
 		elseif not data.hasAttr and data.hasSkill and data.bonus == 0 then
             message = string.format(formatAttribute, speaker:Name(), tonumber(text) + data.skillVal, tonumber(text), data.skillVal, data.numSides, data.skillName)
-		elseif not data.hasAttr and data.hasSkill and data.bonus > 0 then
+		elseif not data.hasAttr and data.hasSkill and data.bonus ~= 0 then
 			message = string.format(formatAttributeBoost, speaker:Name(), tonumber(text) + data.skillVal + data.bonus, tonumber(text), data.skillVal, data.bonus, data.numSides, data.skillName)
 		elseif data.hasAttr and data.hasSkill and data.bonus == 0 then
 			message = string.format(formatAttributeSkill, speaker:Name(), tonumber(text) + data.attrVal + data.skillVal, tonumber(text), data.attrVal, data.skillVal, data.numSides, data.attrName, data.skillName)
-		elseif data.hasAttr and data.hasSkill and data.bonus > 0 then
+		elseif data.hasAttr and data.hasSkill and data.bonus ~= 0 then
 			message = string.format(formatAttributeSkillBoost, speaker:Name(), tonumber(text) + data.attrVal + data.skillVal + data.bonus, tonumber(text), data.attrVal, data.skillVal, data.bonus, data.numSides, data.attrName, data.skillName)
 		end 
 
