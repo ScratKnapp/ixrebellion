@@ -117,7 +117,7 @@ function PANEL:Init()
 	local shieldPanel = vgui.Create("DPanel", self)
 	shieldPanel:SetPos(600, 50)
 	shieldPanel:SetSize(140, 20)
-	local boxWidth = 12
+	local boxWidth = 5
 	local boxSpacing = 2
 	local totalBoxWidth = boxWidth + boxSpacing
 	local numShieldPoints = client:GetShieldPoints()

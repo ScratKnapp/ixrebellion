@@ -134,7 +134,7 @@ net.Receive(
 		local shieldPanel = vgui.Create("DPanel", frame)
 		shieldPanel:SetPos(600, 50)
 		shieldPanel:SetSize(140, 20)
-		local boxWidth = 12
+		local boxWidth = 5
 		local boxSpacing = 2
 		local totalBoxWidth = boxWidth + boxSpacing
 		local numShieldPoints = client:GetShieldPoints()
