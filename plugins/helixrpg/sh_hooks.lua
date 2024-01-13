@@ -49,7 +49,7 @@ function playerMeta:SetShieldPoints(points, take)
 	if take then
 		newpoints = math.max(0, currentPoints - points)
 	else
-		newpoints = math.min(PLUGIN.MaxShields, currentPoints + points)
+		newpoints = math.min(self:GetMaxShields(), currentPoints + points)
 	end
 	self:SetNWInt("ShieldPoints", newpoints)
 end
@@ -84,6 +84,14 @@ end
 
 function playerMeta:GetMaxWounds()
 	return self:GetNWInt("MaxWounds", PLUGIN.MaxWounds)
+end
+
+function playerMeta:GetMaxShields()
+	return self:GetNWInt("GetMaxShields", 0)
+end
+
+function playerMeta:SetMaxShields(points)
+	return self:SetNWInt("GetMaxShields", points)
 end
 
 

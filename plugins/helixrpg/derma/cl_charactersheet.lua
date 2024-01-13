@@ -121,7 +121,7 @@ function PANEL:Init()
 	local boxSpacing = 2
 	local totalBoxWidth = boxWidth + boxSpacing
 	local numShieldPoints = client:GetShieldPoints()
-	for i = 1, PLUGIN.MaxShields do
+	for i = 1, client:GetMaxShields() do
 		local box = vgui.Create("DPanel", shieldPanel)
 		box:SetPos((i - 1) * totalBoxWidth, 2)
 		box:SetSize(boxWidth, 16)
